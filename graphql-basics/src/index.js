@@ -14,8 +14,7 @@ const users = [{
     id: '3',
     name: 'Vasya',
     email: 'vasya@example.com'
-}]
-
+}];
 // posts data
 const posts = [{
     id: '1',
@@ -23,26 +22,32 @@ const posts = [{
     body: 'first body',
     published: true,
     author: '1'
-},{
+}, {
     id: '2',
     title: 'second',
     body: 'second body',
     published: false,
-    author: '1'
-},{
+    author: '3'
+}, {
     id: '3',
     title: 'third',
     body: 'third body',
     published: false,
-    author: '2'
-}]
+    author: '3'
+}];
+// comments data
+const comments = [
+    {id: '1', text: 'first comment', author: '2', post: '1'},
+    {id: '2', text: 'second comment', author: '3', post: '1'},
+    {id: '3', text: 'third comment', author: '2', post: '1'},
+    {id: '4', text: 'fourth comment', author: '1', post: '3'}
+];
 
 const typeDefs = `
     type Query {
         users: [User!]!
         posts(query: String): [Post!]!
-        me: User!
-        post: Post!
+        comments: [Comment!]!
     }
 
     type User {
@@ -51,6 +56,7 @@ const typeDefs = `
         email: String!
         age: Int
         posts: [Post!]!
+        comments: [Comment!]!
     }
 
     type Post {
@@ -59,6 +65,14 @@ const typeDefs = `
         body: String!
         published: Boolean!
         author: User!
+        comments: [Comment]!
+    }
+
+    type Comment {
+        id: ID!
+        text: String!
+        author: User!
+        post: Post!
     }
 `;
 
@@ -75,21 +89,8 @@ const resolvers = {
                 return post.title.toLowerCase().includes(args.query.toLowerCase()) || post.body.toLowerCase().includes(args.query.toLowerCase());
             });
         },
-        me() {
-            return {
-                id: '1',
-                name: 'Johnny',
-                email: 'johnnybanana@gmail.com',
-                age: 30
-            };
-        },
-        post() {
-            return {
-                id: '1_1',
-                title: 'post title',
-                body: 'post body',
-                published: false
-            }
+        comments(parent, args, ctx, info) {
+            return comments;
         }
     },
     Post: {
@@ -99,6 +100,27 @@ const resolvers = {
             return users.find((user) => {
                 return user.id === authorId;
             });
+        },
+        comments(parent, args, ctx, info) {
+            const postId = parent.id;
+            return comments.filter((comment) => {
+                return comment.post === postId;
+            });
+        }
+    },
+    Comment: {
+        //parent - comment
+        author(parent, args, ctx, info) {
+            const authorId = parent.author;
+            return users.find((user) => {
+                return user.id === authorId;
+            });
+        },
+        post(parent, args, ctx, info) {
+            const postId = parent.post;
+            return posts.find((post) => {
+                return postId === post.id;
+            });
         }
     },
     User: {
@@ -107,6 +129,12 @@ const resolvers = {
             const userId = parent.id;
             return posts.filter((post) => {
                 return post.author === userId;
+            });
+        },
+        comments(parent, args, ctx, info) {
+            const userId = parent.id;
+            return comments.filter((comment) => {
+                return comment.author === userId;
             });
         }
     }
