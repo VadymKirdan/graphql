@@ -5,6 +5,8 @@ const prisma = new Prisma({
     endpoint: 'http://192.168.99.100:4466'
 });
 
+export default prisma;
+
 /*prisma.query.users(null, '{id name email posts {id title}}').then((data) => {
     console.log(JSON.stringify(data, undefined, 2));
 });*/
@@ -26,7 +28,7 @@ const prisma = new Prisma({
 });*/
 
 
-const updatePostForUser = async (postId, data) => {
+/*const updatePostForUser = async (postId, data) => {
     const postExists = await prisma.exists.Post({id: postId});
     if (!postExists) {
         throw new Error('Post doesn\'t exists!');
@@ -45,7 +47,7 @@ updatePostForUser('ck1yw0xp8000ptanbr3l', {published: true}).then(data => {
     console.log('user data: ', JSON.stringify(data, undefined, 2));
 }).catch((err) => {
     console.log(err);
-});
+});*/
 
 /*prisma.mutation.updatePost({
         data: {
