@@ -1,5 +1,4 @@
 import getUserId from '../utils/getUserId';
-import prisma from '../prisma';
 
 const User = {
     email: {
